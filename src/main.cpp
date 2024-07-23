@@ -5,6 +5,7 @@
 #include <functional>
 #include <vector>
 #include <string>
+#include <Wire.h>
 #include "esp32-hal-psram.h"
 
 // Public Globals Variables
@@ -39,6 +40,9 @@ uint8_t buff[4096] = {0};
 TFT_eSPI tft = TFT_eSPI();         // Invoke custom library
 TFT_eSprite sprite = TFT_eSprite(&tft);
 TFT_eSprite draw = TFT_eSprite(&tft);
+
+#define I2C_SDA_PIN 21
+#define I2C_SCL_PIN 22
 
 #if defined(CARDPUTER)
   Keyboard_Class Keyboard = Keyboard_Class();
@@ -182,6 +186,7 @@ void setup() {
   _tone(5000, 50);
   Program:
   delay(200);
+  Wire1.begin(I2C_SDA_PIN, I2C_SCL_PIN);
   runClockLoop();
 }
 
