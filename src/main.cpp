@@ -58,6 +58,8 @@ TFT_eSprite draw = TFT_eSprite(&tft);
 #include "modules/others/openhaystack.h"
 #include "modules/others/tururururu.h"
 #include "modules/others/TV-B-Gone.h"
+#include "modules/others/qrcode_menu.h"
+#include "modules/others/mic.h"
 #include "modules/others/webInterface.h"
 #include "modules/rf/rf.h"
 #include "modules/rfid/rfid.h"
