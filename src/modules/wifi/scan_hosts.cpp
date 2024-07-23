@@ -111,34 +111,35 @@ void local_scan_setup() {
 
     send_arp(base_ip, hostslist);
 
-    for (int i = 1; i <= numHosts; i++) {
-        if (stopScan) {
-            break;
+    options = {};
+    if(!returnToMenu) {
+        for (int i = 1; i <= numHosts; i++) {
+            if (stopScan) {
+                break;
+            }
+
+            IPAddress currentIP = network;
+            currentIP[3] = i;
+
+            if (arpRequest(currentIP)) {
+                hostslist.push_back(currentIP);
+                foundHosts = true;
+            }
         }
 
-        IPAddress currentIP = network;
-        currentIP[3] = i;
+        options.push_back({"Main menu", [=]() { backToMenu(); }});
+        if (!foundHosts) {
+            tft.println("No hosts found");
+            delay(2000);
+            return;
+        }
 
-        if (arpRequest(currentIP)) {
-            hostslist.push_back(currentIP);
-            foundHosts = true;
+        while(!checkEscPress()) {
+            loopOptions(options);
+            delay(200);
+            if(returnToMenu) break;
         }
     }
-
-    if (!foundHosts) {
-        tft.println("No hosts found");
-        delay(2000);
-        return;
-    }
-
-
-    delay(200);
-    loopOptions(options);
-    delay(200);
-
-
-
-
 }
 
 

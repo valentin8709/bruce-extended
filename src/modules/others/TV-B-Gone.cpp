@@ -118,6 +118,7 @@ void StartTvBGone() {
   options = {
       {"Region NA", [&]() { region = NA; }},
       {"Region EU", [&]() { region = EU; }},
+      {"Main menu", [=]() { backToMenu(); }},
   };
   delay(200);
   loopOptions(options);
@@ -231,8 +232,9 @@ void otherIRcodes() {
   if(setupSdCard()) {
     bool teste=false;
     options = {
-      {"SD Card", [&]()  { fs=&SD; }},
+      {"SD Card", [&]()    { fs=&SD; }},
       {"LittleFS", [&]()   { fs=&LittleFS; }},
+      {"Main menu", [=]()  { backToMenu(); }},
     };
     delay(200);
     loopOptions(options);
@@ -257,6 +259,7 @@ void otherIRcodes() {
   options = {
     {"Choose cmd", [&]()  { mode_cmd=true; }},
     {"Spam all", [&]()    { mode_cmd=false; }},
+    {"Main menu", [=]()   { backToMenu(); }},
   };
   delay(200);
   loopOptions(options);

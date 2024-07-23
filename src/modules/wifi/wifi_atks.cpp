@@ -98,6 +98,7 @@ void wifi_atk_menu() {
     options = {
       {"Target Atks", [&]() { scanAtks = true; }},
       {"Beacon SPAM", [=]() { beaconAttack(); }},
+      {"Main Menu", [=]() { backToMenu(); }},
     };
     delay(200);
     loopOptions(options);
@@ -438,27 +439,29 @@ void beaconAttack() {
     {"Funny SSID", [&]() { BeaconMode = 0; txt = "Spamming Funny"; }},
     {"Rucky Roll", [&]() { BeaconMode = 1; txt = "Spamming Ricky"; }},
     {"Random SSID", [&]() { BeaconMode = 2; txt = "Spamming Random"; }},
+    {"Main Menu", [=]() { backToMenu(); }},
   };
   delay(200);
   loopOptions(options);
   delay(200);
 
-  wifiConnected = true; // display wifi icon
-  drawMainMenu(0);
-  displayRedStripe(txt,TFT_WHITE, FGCOLOR);
-  while (1) {
-    displayRedStripe(String(BeaconMode),TFT_WHITE, FGCOLOR);
-    delay(200);
-    if (BeaconMode == 0) {
-      beaconSpamList(Beacons);
-    } else if (BeaconMode == 1){
-      beaconSpamList(rickrollssids);
-    } else if (BeaconMode == 2) {
-      char* randoms = randomSSID();
-      beaconSpamList(randoms);
-    }
-    if (checkEscPress()) break;
+  if(!returnToMenu) {
+      wifiConnected = true; // display wifi icon
+      drawMainMenu(0);
+      displayRedStripe(txt,TFT_WHITE, FGCOLOR);
+      while (1) {
+        displayRedStripe(String(BeaconMode),TFT_WHITE, FGCOLOR);
+        delay(200);
+        if (BeaconMode == 0) {
+          beaconSpamList(Beacons);
+        } else if (BeaconMode == 1){
+          beaconSpamList(rickrollssids);
+        } else if (BeaconMode == 2) {
+          char* randoms = randomSSID();
+          beaconSpamList(randoms);
+        }
+        if (checkEscPress()) break;
+      }
+      wifiDisconnect();
   }
-  wifiDisconnect();
-
 }
