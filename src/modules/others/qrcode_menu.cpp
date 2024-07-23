@@ -1,7 +1,7 @@
 #include "../lib/TFT_eSPI_QRcode/src/qrcode.h"
-#include "display.h"
-#include "settings.h"
-#include "mykeyboard.h"
+#include "core/display.h"
+#include "core/settings.h"
+#include "core/mykeyboard.h"
 
 
 struct QRCODESTR {

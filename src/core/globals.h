@@ -16,6 +16,9 @@ extern char16_t FGCOLOR;
 #include <ESP32Time.h>
 #include <EEPROM.h>
 #include <ArduinoJson.h>
+#include "../lib/RTC/cplus_RTC.h"
+
+#define BUZZ_PIN 2
 
 #if defined (STICK_C_PLUS) || defined (STICK_C)
   #include <AXP192.h>
@@ -73,7 +76,6 @@ extern int RfTx;
 
 extern int RfRx;
 
-
 void readFGCOLORFromEEPROM();
 
 void backToMenu();
@@ -88,3 +90,5 @@ extern bool dimmer;
 extern  String wui_usr;
 extern  String wui_pwd;
 extern int tmz;
+
+void _tone(unsigned int frequency, unsigned long duration);

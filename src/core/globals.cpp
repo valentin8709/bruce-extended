@@ -71,3 +71,7 @@ void updateTimeStr(struct tm timeInfo) {
   // Atualiza timeStr com a hora e minuto
   snprintf(timeStr, sizeof(timeStr), "%02d:%02d", timeInfo.tm_hour, timeInfo.tm_min);
 }
+
+void _tone(unsigned int frequency, unsigned long duration = 0UL) {
+    tone(BUZZ_PIN, frequency, duration);
+}

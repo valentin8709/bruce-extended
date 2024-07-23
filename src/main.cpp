@@ -24,8 +24,8 @@ bool returnToMenu;
 char timeStr[10];
 time_t localTime;
 struct tm* timeInfo;
-ESP32Time rtc;
-bool clock_set = false;
+cplus_RTC _rtc;
+bool clock_set = true;
 JsonDocument settings;
 
 String wui_usr="admin";
@@ -189,6 +189,7 @@ void setup() {
 **  Main loop
 **********************************************************************/
 void loop() {
+  RTC_TimeTypeDef _time;
   bool redraw = true;
   int index = 0;
   int opt = 6; // there are 3 options> 1 list SD files, 2 OTA and 3 Config

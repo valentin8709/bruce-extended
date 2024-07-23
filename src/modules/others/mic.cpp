@@ -1,5 +1,5 @@
 #include "mic.h"
-#include "mykeyboard.h"
+#include "core/mykeyboard.h"
 
 /**
 * @file test_mic.cpp

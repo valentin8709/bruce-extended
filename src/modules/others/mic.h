@@ -11,8 +11,8 @@
 
 #include <fft.h>
 #include "driver/i2s.h"
-#include "display.h"
-#include "globals.h"
+#include "core/display.h"
+#include "core/globals.h"
 
 /* Mic */
 void mic_init();

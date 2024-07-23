@@ -1,5 +1,5 @@
 #include "ble_common.h"
-#include "mykeyboard.h"
+#include "core/mykeyboard.h"
 
 #define SERVICE_UUID "1bc68b2a-f3e3-11e9-81b4-2a2ae2dbcce4"
 #define CHARACTERISTIC_RX_UUID "1bc68da0-f3e3-11e9-81b4-2a2ae2dbcce4"
@@ -807,10 +807,11 @@ class MyServerCallbacks : public BLEServerCallbacks
     }
 };
 
-uint8_t *data = new uint8_t[128];
+// data = new uint8_t[128];
 
 class MyCallbacks : public BLECharacteristicCallbacks
 {
+    uint8_t *data = new uint8_t[128];
     void onWrite(BLECharacteristic *pCharacteristic)
     {
         data = pCharacteristic->getData();

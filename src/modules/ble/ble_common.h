@@ -7,8 +7,8 @@
 #include <BLEAdvertisedDevice.h>
 #include <BLEBeacon.h>
 
-#include "globals.h"
-#include "display.h"
+#include "core/globals.h"
+#include "core/display.h"
 
 extern const unsigned char icon_ble[4608];
 extern const unsigned char icon_ble_disconnect[4608];

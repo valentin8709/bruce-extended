@@ -149,10 +149,6 @@ void setScreenOff() {
   }
 }
 
-/*********************************************************************
-**  Function: setClock
-**  Handles Menu to set timezone to NTP
-**********************************************************************/
 const char* ntpServer = "pool.ntp.org";
 long  selectedTimezone;
 const int   daylightOffset_sec = 0;
@@ -188,150 +184,158 @@ void setUIColor(){
     EEPROM.write(12, int(FGCOLOR & 0x00FF));
     EEPROM.commit();
     EEPROM.end();
-    }
+}
 
-
-
+/*********************************************************************
+**  Function: setClock
+**  Handles Menu to set timezone to NTP
+**********************************************************************/
 void setClock() {
-  bool auto_mode=true;
-  options = {
-    {"NTP adjust", [&]() { auto_mode=true; }},
-    {"Manually set", [&]() { auto_mode=false; }},
-    {"Main menu", [=]() { backToMenu(); }},
-  };
-  delay(200);
-  loopOptions(options);
-  delay(200);
+    RTC_TimeTypeDef TimeStruct;
+    bool auto_mode=true;
+    cplus_RTC _rtc;
+    _rtc.GetBm8563Time();
 
-  if(!returnToMenu) {
-      if (auto_mode) {
-        if(!wifiConnected) wifiConnectMenu();
-        loopOptions(options);
+    options = {
+        {"NTP adjust", [&]()   { auto_mode=true; }},
+        {"Manually set", [&]() { auto_mode=false; }},
+        {"Main menu", [=]()    { backToMenu(); }},
+    };
+    delay(200);
+    loopOptions(options);
 
-        options = {
-          {"Brasilia",  [&]() { timeClient.setTimeOffset(-3 * 3600); tmz=0; }},
-          {"Pernambuco",[&]() { timeClient.setTimeOffset(-2 * 3600); tmz=1; }},
-          {"New York",  [&]() { timeClient.setTimeOffset(-4 * 3600); tmz=2; }},
-          {"Lisbon",    [&]() { timeClient.setTimeOffset(1 * 3600);  tmz=3; }},
-          {"Hong Kong", [&]() { timeClient.setTimeOffset(8 * 3600);  tmz=4; }},
-          {"Sydney",    [&]() { timeClient.setTimeOffset(10 * 3600); tmz=5; }},
-          {"Tokyo",     [&]() { timeClient.setTimeOffset(9 * 3600);  tmz=6; }},
-          {"Moscow",    [&]() { timeClient.setTimeOffset(3 * 3600);  tmz=7; }},
-          {"Amsterdan", [&]() { timeClient.setTimeOffset(2 * 3600);  tmz=8; }},
-        };
-        delay(200);
-        loopOptions(options);
-        EEPROM.begin(EEPROMSIZE); // open eeprom
-        EEPROM.write(10, tmz);     // set the byte
-        EEPROM.commit();          // Store data to EEPROM
-        EEPROM.end();             // Free EEPROM memory
+    if(!returnToMenu) {
+        if (auto_mode) {
+            if(!wifiConnected) wifiConnectMenu();
+            int tmz;
 
-        delay(200);
-        timeClient.begin();
-        timeClient.update();
-        localTime = myTZ.toLocal(timeClient.getEpochTime());
-        rtc.setTime(timeClient.getEpochTime());
-      }
-      else {
-        int hr, mn, am;
-        options = {
-          {"00", [&]() { hr=0; }},
-          {"01", [&]() { hr=1; }},
-          {"02", [&]() { hr=2; }},
-          {"03", [&]() { hr=3; }},
-          {"04", [&]() { hr=4; }},
-          {"05", [&]() { hr=5; }},
-          {"06", [&]() { hr=6; }},
-          {"07", [&]() { hr=7; }},
-          {"08", [&]() { hr=8; }},
-          {"09", [&]() { hr=9; }},
-          {"10", [&]() { hr=10; }},
-          {"11", [&]() { hr=11; }},
-        };
-        delay(200);
-        loopOptions(options,false,true,"Set Hour");
-        delay(200);
-        options = {
-          {"00", [&]() { mn=0; }},
-          {"01", [&]() { mn=1; }},
-          {"02", [&]() { mn=2; }},
-          {"03", [&]() { mn=3; }},
-          {"04", [&]() { mn=4; }},
-          {"05", [&]() { mn=5; }},
-          {"06", [&]() { mn=6; }},
-          {"07", [&]() { mn=7; }},
-          {"08", [&]() { mn=8; }},
-          {"09", [&]() { mn=9; }},
-          {"10", [&]() { mn=10; }},
-          {"11", [&]() { mn=11; }},
-          {"12", [&]() { mn=12; }},
-          {"13", [&]() { mn=13; }},
-          {"14", [&]() { mn=14; }},
-          {"15", [&]() { mn=15; }},
-          {"16", [&]() { mn=16; }},
-          {"17", [&]() { mn=17; }},
-          {"18", [&]() { mn=18; }},
-          {"19", [&]() { mn=19; }},
-          {"20", [&]() { mn=20; }},
-          {"21", [&]() { mn=21; }},
-          {"22", [&]() { mn=22; }},
-          {"23", [&]() { mn=23; }},
-          {"24", [&]() { mn=24; }},
-          {"25", [&]() { mn=25; }},
-          {"26", [&]() { mn=26; }},
-          {"27", [&]() { mn=27; }},
-          {"28", [&]() { mn=28; }},
-          {"29", [&]() { mn=29; }},
-          {"30", [&]() { mn=30; }},
-          {"31", [&]() { mn=31; }},
-          {"32", [&]() { mn=32; }},
-          {"33", [&]() { mn=33; }},
-          {"34", [&]() { mn=34; }},
-          {"35", [&]() { mn=35; }},
-          {"36", [&]() { mn=36; }},
-          {"37", [&]() { mn=37; }},
-          {"38", [&]() { mn=38; }},
-          {"39", [&]() { mn=39; }},
-          {"40", [&]() { mn=40; }},
-          {"41", [&]() { mn=41; }},
-          {"42", [&]() { mn=42; }},
-          {"43", [&]() { mn=43; }},
-          {"44", [&]() { mn=44; }},
-          {"45", [&]() { mn=45; }},
-          {"46", [&]() { mn=46; }},
-          {"47", [&]() { mn=47; }},
-          {"48", [&]() { mn=48; }},
-          {"49", [&]() { mn=49; }},
-          {"50", [&]() { mn=50; }},
-          {"51", [&]() { mn=51; }},
-          {"52", [&]() { mn=52; }},
-          {"53", [&]() { mn=53; }},
-          {"54", [&]() { mn=54; }},
-          {"55", [&]() { mn=55; }},
-          {"56", [&]() { mn=56; }},
-          {"57", [&]() { mn=57; }},
-          {"58", [&]() { mn=58; }},
-          {"59", [&]() { mn=59; }},
-        };
-        delay(200);
-        loopOptions(options,false,true,"Set Minute");
-        delay(200);
-        options = {
-          {"AM", [&]() { am=0; }},
-          {"PM", [&]() { am=12; }},
-        };
-        delay(200);
-        loopOptions(options);
-        delay(200);
-        rtc.setTime(0,mn,hr+am,20,06,2024); // send me a gift, @Pirata!
-      }
-      clock_set=true;
-      runClockLoop();
-  }
+            options = {
+                {"Brasilia",  [&]() { timeClient.setTimeOffset(-3 * 3600); tmz=0; }},
+                {"Pernambuco",[&]() { timeClient.setTimeOffset(-2 * 3600); tmz=1; }},
+                {"New York",  [&]() { timeClient.setTimeOffset(-4 * 3600); tmz=2; }},
+                {"Lisbon",    [&]() { timeClient.setTimeOffset(1 * 3600);  tmz=3; }},
+                {"Hong Kong", [&]() { timeClient.setTimeOffset(8 * 3600);  tmz=4; }},
+                {"Sydney",    [&]() { timeClient.setTimeOffset(10 * 3600); tmz=5; }},
+                {"Tokyo",     [&]() { timeClient.setTimeOffset(9 * 3600);  tmz=6; }},
+                {"Moscow",    [&]() { timeClient.setTimeOffset(3 * 3600);  tmz=7; }},
+                {"Amsterdan", [&]() { timeClient.setTimeOffset(2 * 3600);  tmz=8; }},
+            };
+            delay(200);
+            loopOptions(options);
+            EEPROM.begin(EEPROMSIZE); // open eeprom
+            EEPROM.write(8, tmz);     // set the byte
+            EEPROM.commit();          // Store data to EEPROM
+            EEPROM.end();             // Free EEPROM memory
+
+            delay(200);
+            timeClient.begin();
+            timeClient.update();
+            localTime = myTZ.toLocal(timeClient.getEpochTime());
+            //_rtc.SetTime(timeClient.getEpochTime());
+        }
+        else {
+            int hr, mn, am;
+            options = {
+                {"00", [&]() { hr=0; }},
+                {"01", [&]() { hr=1; }},
+                {"02", [&]() { hr=2; }},
+                {"03", [&]() { hr=3; }},
+                {"04", [&]() { hr=4; }},
+                {"05", [&]() { hr=5; }},
+                {"06", [&]() { hr=6; }},
+                {"07", [&]() { hr=7; }},
+                {"08", [&]() { hr=8; }},
+                {"09", [&]() { hr=9; }},
+                {"10", [&]() { hr=10; }},
+                {"11", [&]() { hr=11; }},
+            };
+            delay(200);
+            loopOptions(options,false,true,"Set Hour");
+            delay(200);
+            options = {
+                {"00", [&]() { mn=0; }},
+                {"01", [&]() { mn=1; }},
+                {"02", [&]() { mn=2; }},
+                {"03", [&]() { mn=3; }},
+                {"04", [&]() { mn=4; }},
+                {"05", [&]() { mn=5; }},
+                {"06", [&]() { mn=6; }},
+                {"07", [&]() { mn=7; }},
+                {"08", [&]() { mn=8; }},
+                {"09", [&]() { mn=9; }},
+                {"10", [&]() { mn=10; }},
+                {"11", [&]() { mn=11; }},
+                {"12", [&]() { mn=12; }},
+                {"13", [&]() { mn=13; }},
+                {"14", [&]() { mn=14; }},
+                {"15", [&]() { mn=15; }},
+                {"16", [&]() { mn=16; }},
+                {"17", [&]() { mn=17; }},
+                {"18", [&]() { mn=18; }},
+                {"19", [&]() { mn=19; }},
+                {"20", [&]() { mn=20; }},
+                {"21", [&]() { mn=21; }},
+                {"22", [&]() { mn=22; }},
+                {"23", [&]() { mn=23; }},
+                {"24", [&]() { mn=24; }},
+                {"25", [&]() { mn=25; }},
+                {"26", [&]() { mn=26; }},
+                {"27", [&]() { mn=27; }},
+                {"28", [&]() { mn=28; }},
+                {"29", [&]() { mn=29; }},
+                {"30", [&]() { mn=30; }},
+                {"31", [&]() { mn=31; }},
+                {"32", [&]() { mn=32; }},
+                {"33", [&]() { mn=33; }},
+                {"34", [&]() { mn=34; }},
+                {"35", [&]() { mn=35; }},
+                {"36", [&]() { mn=36; }},
+                {"37", [&]() { mn=37; }},
+                {"38", [&]() { mn=38; }},
+                {"39", [&]() { mn=39; }},
+                {"40", [&]() { mn=40; }},
+                {"41", [&]() { mn=41; }},
+                {"42", [&]() { mn=42; }},
+                {"43", [&]() { mn=43; }},
+                {"44", [&]() { mn=44; }},
+                {"45", [&]() { mn=45; }},
+                {"46", [&]() { mn=46; }},
+                {"47", [&]() { mn=47; }},
+                {"48", [&]() { mn=48; }},
+                {"49", [&]() { mn=49; }},
+                {"50", [&]() { mn=50; }},
+                {"51", [&]() { mn=51; }},
+                {"52", [&]() { mn=52; }},
+                {"53", [&]() { mn=53; }},
+                {"54", [&]() { mn=54; }},
+                {"55", [&]() { mn=55; }},
+                {"56", [&]() { mn=56; }},
+                {"57", [&]() { mn=57; }},
+                {"58", [&]() { mn=58; }},
+                {"59", [&]() { mn=59; }},
+            };
+            delay(200);
+            loopOptions(options,false,true,"Set Minute");
+            delay(200);
+            options = {
+                {"AM", [&]() { am=0; }},
+                {"PM", [&]() { am=12; }},
+            };
+            delay(200);
+            loopOptions(options);
+            delay(200);
+
+            TimeStruct.Hours   = hr+am;
+            TimeStruct.Minutes = mn;
+            TimeStruct.Seconds = 0;
+            _rtc.SetTime(&TimeStruct);
+        }
+        runClockLoop();
+    }
 }
 
 void runClockLoop() {
-  int tmp=0;
+    int tmp=0;
     RTC_TimeTypeDef _time;
     cplus_RTC _rtc;
     tft.fillScreen(BGCOLOR);
@@ -360,27 +364,6 @@ void runClockLoop() {
             //goto Exit;
         }
     }
-  }
-
-   // Checks para sair do loop
-  #ifndef CARDPUTER
-    if(checkPrevPress()) { // Apertar o botão power dos sticks
-      tft.fillScreen(BGCOLOR);
-      returnToMenu=true;
-      break;
-      //goto Exit;
-  }
-    #else
-    Keyboard.update();
-    if(Keyboard.isKeyPressed('`')) {
-      tft.fillScreen(BGCOLOR);
-      returnToMenu=true;
-      break;
-      //goto Exit;
-    }   // apertar ESC no Car.writeer
-    #endif
-
-  }
 }
 
 /*********************************************************************
