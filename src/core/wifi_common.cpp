@@ -10,6 +10,8 @@
 ** Description:   Connects to wifiNetwork
 ***************************************************************************************/
 bool wifiConnect(String ssid, int encryptation, bool isAP) {
+  char* defaultSSID="Mobile-AP";
+  char* defaultPassword="CHANGE_PASSWORD";
   if(!isAP) {
     int tmz;
     EEPROM.begin(EEPROMSIZE);
@@ -40,7 +42,11 @@ bool wifiConnect(String ssid, int encryptation, bool isAP) {
   Retry:
     if (!found || wrongPass) {
       delay(200);
-      if (encryptation > 0) pwd = keyboard(pwd, 63, "Network Password:");
+      // Default password for known AP
+      if(ssid == defaultSSID) {
+        pwd = defaultPassword;
+      }
+      else if (encryptation > 0) pwd = keyboard(pwd, 63, "Network Password:");
 
       EEPROM.begin(EEPROMSIZE);
       if (pwd != EEPROM.readString(20)) {
