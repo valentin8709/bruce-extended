@@ -201,6 +201,7 @@ void loop() {
     }
 
     if(checkPrevPress()) {
+      checkReboot();
       if(index==0) index = opt - 1;
       else if(index>0) index--;
       redraw = true;

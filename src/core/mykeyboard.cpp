@@ -59,6 +59,42 @@ bool checkEscPress(){
   else { return false; }
 }
 
+void checkReboot() {
+    int countDown;
+    #if defined(STICK_C_PLUS2)
+        /* Long press power off */
+        if (digitalRead(UP_BTN)==LOW)
+        {
+            uint32_t time_count = millis();
+
+            while (digitalRead(UP_BTN)==LOW)
+            {
+                // Display poweroff bar only if holding button
+                if (millis() - time_count > 500) {
+                    tft.setCursor(60, 10);
+                    tft.setTextSize(1);
+                    tft.setTextColor(TFT_RED, TFT_BLACK);
+                    countDown = (millis() - time_count) / 1000 + 1;
+                    tft.printf(" PWR OFF IN %d/3\n", countDown);
+                    delay(10);
+                }
+            }
+            // Option for reboot on single press
+            /*
+            printf("rebooting...\n");
+            tft.fillScreen(TFT_BLACK);
+            tft.setCursor(0, 10);
+            tft.setTextSize(2);
+            tft.setTextColor(TFT_RED, TFT_BLACK);
+            tft.drawCentreString("REBOOTING...\n", tft.width() / 2, tft.height() / 2 - 12, SMOOTH_FONT);
+            //tftUpdate();
+            delay(500);
+            esp_restart();
+            */
+        }
+    #endif
+}
+
 #ifndef STICK_C
 /* Starts keyboard to type data */
 String keyboard(String mytext, int maxSize, String msg) {
