@@ -53,7 +53,7 @@ void readFGCOLORFromEEPROM() {
             FGCOLOR = TFT_ORANGE;
             break;
         default:
-            FGCOLOR = TFT_PURPLE+0x3000;
+            FGCOLOR = TFT_ORANGE;
             EEPROM.put(5, 0);
             EEPROM.commit();
             break;
