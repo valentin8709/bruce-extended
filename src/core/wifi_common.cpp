@@ -113,7 +113,7 @@ bool wifiConnect(String ssid, int encryptation, bool isAP) {
     IPAddress AP_GATEWAY(172, 0, 0, 1);
     WiFi.mode(WIFI_AP);
     WiFi.softAPConfig(AP_GATEWAY, AP_GATEWAY, IPAddress(255, 255, 255, 0));
-    WiFi.softAP("BruceNet", "",6,0,4,false);
+    WiFi.softAP("BruceNet", "Bruce",6,0,4,false);
     Serial.print("IP: "); Serial.println(WiFi.softAPIP());
     wifiConnected=true;
     return true;
