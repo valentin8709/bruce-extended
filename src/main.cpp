@@ -122,6 +122,7 @@ void setup() {
   rotation = gsetRotation();
   tft.setRotation(rotation);
   resetTftDisplay();
+  setBrightness(25);
 
   #if defined(BACKLIGHT)
   pinMode(BACKLIGHT, OUTPUT);
