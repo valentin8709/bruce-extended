@@ -55,6 +55,7 @@ TFT_eSprite draw = TFT_eSprite(&tft);
 #include "core/wifi_common.h"
 
 #include "modules/ble/ble_spam.h"
+#include "modules/ble/ble_common.h"
 #include "modules/others/openhaystack.h"
 #include "modules/others/tururururu.h"
 #include "modules/others/TV-B-Gone.h"
