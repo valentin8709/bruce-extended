@@ -384,6 +384,38 @@ void runClockLoop() {
 }
 
 /*********************************************************************
+**  Function: gsetFmPin
+**  get or set FM Pin from EEPROM
+**********************************************************************/
+int gsetFmPin(bool set){
+    /*EEPROM.begin(EEPROMSIZE);
+    int result = EEPROM.read(8);
+    if(result>36) result = GROVE_SCL;
+    if(set) {
+        options = {
+            {"Default FM Pin", [&]() { result = GROVE_SCL; }},
+            #ifndef CARDPUTER
+                {"G26",     [&]() { result=26; }},
+                {"G25",     [&]() { result=25; }},
+                {"G0",     [&]() { result=0; }},
+            #endif
+            {"Groove W", [&]() { result = GROVE_SCL; }},
+            {"Groove Y", [&]() { result = GROVE_SDA; }},
+        };
+        delay(200);
+        loopOptions(options);
+        delay(200);
+        // TODO: check where to write FM Pin
+        EEPROM.write(63, result);
+        EEPROM.commit();
+    }
+    EEPROM.end();*/
+    returnToMenu=true;
+    //FmRTx = result;
+    //return result;
+}
+
+/*********************************************************************
 **  Function: gsetIrTxPin
 **  get or set IR Pin from EEPROM
 **********************************************************************/
