@@ -160,7 +160,7 @@ bool wifiConnectMenu(bool isAP) {
     for(int i=0; i<nets; i++){
       options.push_back({WiFi.SSID(i).c_str(), [=]() { wifiConnect(WiFi.SSID(i).c_str(),int(WiFi.encryptionType(i)), false); }});
     }
-    options.push_back({"Main Menu", [=]() { backToMenu(); }});
+    options.push_back({"Main menu", [=]() { backToMenu(); }});
     delay(200);
     loopOptions(options);
     delay(200);

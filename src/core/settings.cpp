@@ -197,7 +197,7 @@ void setClock() {
   options = {
     {"NTP adjust", [&]() { auto_mode=true; }},
     {"Manually set", [&]() { auto_mode=false; }},
-    {"Main Menu", [=]() { backToMenu(); }},
+    {"Main menu", [=]() { backToMenu(); }},
   };
   delay(200);
   loopOptions(options);

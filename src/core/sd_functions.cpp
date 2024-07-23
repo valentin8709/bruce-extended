@@ -437,7 +437,7 @@ String loopSD(FS &fs, bool filePicker) {
             {"New Folder", [=]() { createFolder(fs, Folder); }},
             {"Rename", [=]() { renameFile(fs, fileList[index][1], fileList[index][0]); }},
             {"Delete", [=]() { deleteFromSd(fs, fileList[index][1]); }},
-            {"Main Menu", [=]() { backToMenu(); }},
+            {"Main menu", [=]() { backToMenu(); }},
           };
           delay(200);
           loopOptions(options);
@@ -451,7 +451,7 @@ String loopSD(FS &fs, bool filePicker) {
             {"New Folder", [=]() { createFolder(fs, Folder); }},
           };
           if(fileToCopy!="") options.push_back({"Paste", [=]() { pasteFile(fs, Folder); }});
-          options.push_back({"Main Menu", [=]() { backToMenu(); }});
+          options.push_back({"Main menu", [=]() { backToMenu(); }});
           delay(200);
           loopOptions(options);
           tft.drawRoundRect(5,5,WIDTH-10,HEIGHT-10,5,FGCOLOR);
@@ -474,7 +474,7 @@ String loopSD(FS &fs, bool filePicker) {
           if(&fs == &SD) options.push_back({"Copy->LittleFS", [=]() { copyToFs(SD,LittleFS, fileList[index][1]); }});
           if(&fs == &LittleFS && sdcardMounted) options.push_back({"Copy->SD", [=]() { copyToFs(LittleFS, SD, fileList[index][1]); }});
 
-          options.push_back({"Main Menu", [=]() { backToMenu(); }});
+          options.push_back({"Main menu", [=]() { backToMenu(); }});
           delay(200);
           if(!filePicker) loopOptions(options);
           else {

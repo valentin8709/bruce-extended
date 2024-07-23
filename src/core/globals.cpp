@@ -9,7 +9,7 @@
 when using loopfunctions with an option to "Back to Menu", use:
 
 add this option:
-    options.push_back({"Main Menu", [=]() { backToMenu(); }});
+    options.push_back({"Main menu", [=]() { backToMenu(); }});
 
 while(1) {
     if(returnToMenu) break; // stop this loop and return to the previous loop

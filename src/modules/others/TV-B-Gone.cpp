@@ -294,7 +294,7 @@ void otherIRcodes() {
       if(codes[i].protocol.startsWith("Samsung")) options.push_back({ codes[i].name.c_str(), [=](){ sendSamsungCommand(codes[i].address, codes[i].command); }});
       if(codes[i].protocol=="SIRC")   options.push_back({ codes[i].name.c_str(), [=](){ sendSonyCommand(codes[i].address, codes[i].command); }});
     }
-    options.push_back({ "Main Menu" , [&](){ exit=true; }});
+    options.push_back({ "Main menu" , [&](){ exit=true; }});
     databaseFile.close();
 
     digitalWrite(IrTx, LED_OFF);

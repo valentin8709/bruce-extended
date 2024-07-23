@@ -98,7 +98,7 @@ void wifi_atk_menu() {
     options = {
       {"Target Atks", [&]() { scanAtks = true; }},
       {"Beacon SPAM", [=]() { beaconAttack(); }},
-      {"Main Menu", [=]() { backToMenu(); }},
+      {"Main menu", [=]() { backToMenu(); }},
     };
     delay(200);
     loopOptions(options);
@@ -117,7 +117,7 @@ void wifi_atk_menu() {
           target_atk_menu(WiFi.SSID(i).c_str(), WiFi.BSSIDstr(i), chan); }});
       }
 
-      options.push_back({"Main Menu", [=]()     { backToMenu(); }});
+      options.push_back({"Main menu", [=]()     { backToMenu(); }});
 
       delay(200);
       loopOptions(options);
@@ -134,7 +134,7 @@ void target_atk_menu(String tssid,String mac, uint8_t channel) {
       {"Deauth", [=]()        { target_atk(tssid, mac, channel); }},
       {"Clone Portal", [=]()  { startEvilPortal(tssid, channel,false); }},
       {"Deauth+Clone", [=]()  { startEvilPortal(tssid, channel,true); }},
-      {"Main Menu", [=]()     { backToMenu(); }},
+      {"Main menu", [=]()     { backToMenu(); }},
     };
 
     delay(200);
@@ -439,7 +439,7 @@ void beaconAttack() {
     {"Funny SSID", [&]() { BeaconMode = 0; txt = "Spamming Funny"; }},
     {"Rucky Roll", [&]() { BeaconMode = 1; txt = "Spamming Ricky"; }},
     {"Random SSID", [&]() { BeaconMode = 2; txt = "Spamming Random"; }},
-    {"Main Menu", [=]() { backToMenu(); }},
+    {"Main menu", [=]() { backToMenu(); }},
   };
   delay(200);
   loopOptions(options);
