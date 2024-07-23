@@ -192,7 +192,7 @@ void loop() {
   RTC_TimeTypeDef _time;
   bool redraw = true;
   int index = 0;
-  int opt = 6; // there are 3 options> 1 list SD files, 2 OTA and 3 Config
+  int opt = 10; // there are 3 options> 1 list SD files, 2 OTA and 3 Config
   tft.fillRect(0,0,WIDTH,HEIGHT,BGCOLOR);
   while(1){
     if(returnToMenu) {
@@ -282,7 +282,6 @@ void loop() {
                     //{"Scan/copy", [=]()   { displayRedStripe("Scan/Copy"); }},
                     //{"Replay", [=]()      { displayRedStripe("Replay"); }},
                     {"Spectrum", [=]()            { rf_spectrum(); }}, //@IncursioHack
-                    {"Replay", [=]()              { backToMenu(); }}, //@IncursioHack
                     {"Jammer itmt", [=]()         { rf_jammerIntermittent(); }}, //@IncursioHack
                     {"Jammer full", [=]()         { rf_jammerFull(); }}, //@IncursioHack
                     {"Main menu", [=]()           { backToMenu(); }},

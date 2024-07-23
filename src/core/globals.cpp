@@ -32,7 +32,7 @@ void readFGCOLORFromEEPROM() {
 
     switch(colorEEPROM){
         case 0:
-            FGCOLOR = TFT_PURPLE+0x3000;
+            FGCOLOR = TFT_ORANGE;
             break;
         case 1:
             FGCOLOR = TFT_WHITE;
@@ -49,8 +49,11 @@ void readFGCOLORFromEEPROM() {
         case 5:
             FGCOLOR = TFT_YELLOW;
             break;
+        case 6:
+            FGCOLOR = TFT_MAGENTA;
+            break;
         case 7:
-            FGCOLOR = TFT_ORANGE;
+            FGCOLOR = TFT_PURPLE;
             break;
         default:
             FGCOLOR = TFT_ORANGE;

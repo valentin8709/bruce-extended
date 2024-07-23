@@ -166,14 +166,14 @@ void setUIColor(){
     //int color = EEPROM.read(5);
 
     options = {
-      {"Default",   [&]() { FGCOLOR=0xA80F;     }},
+      {"Default",   [&]() { FGCOLOR=TFT_ORANGE;    }},
       {"White",     [&]() { FGCOLOR=TFT_WHITE;  }},
       {"Red",       [&]() { FGCOLOR=TFT_RED;    }},
       {"Green",     [&]() { FGCOLOR=TFT_DARKGREEN; }},
       {"Blue",      [&]() { FGCOLOR=TFT_BLUE;  }},
       {"Yellow",    [&]() { FGCOLOR=TFT_YELLOW;  }},
       {"Magenta",   [&]() { FGCOLOR=TFT_MAGENTA;  }},
-      {"Orange",    [&]() { FGCOLOR=TFT_ORANGE; }},
+      {"Purple",    [&]() { FGCOLOR=TFT_PURPLE; }},
     };
     delay(200);
     loopOptions(options);
