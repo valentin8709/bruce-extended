@@ -5,6 +5,9 @@
 Bruce is meant to be a versatile ESP32 firmware that supports a ton of offensive features focusing to facilitate on Red Team operations.
 It also supports m5stack products and works great with Cardputer and Sticks.
 
+# Discord Server
+Contact us in our [Discord Server](https://discord.gg/WJ9XF9czVT).
+
 # What is this extended version ?
 
 **Bruce is not my work** : I just made a fork in order to add some features and fix some stuff.  

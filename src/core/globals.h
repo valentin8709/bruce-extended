@@ -76,6 +76,13 @@ extern int RfTx;
 
 extern int RfRx;
 
+// Screen sleep control variables
+extern unsigned long previousMillis;
+extern bool isSleeping;
+extern bool isScreenOff;
+extern bool dimmer;
+extern int dimmerSet;
+
 void readFGCOLORFromEEPROM();
 
 void backToMenu();
