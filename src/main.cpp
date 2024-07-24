@@ -390,7 +390,6 @@ void loop() {
                     {"RF TX Pin",     [=]() { gsetRfTxPin(true);}},                 //settings.h
                     {"RF RX Pin",     [=]() { gsetRfRxPin(true);}},                 //settings.h
                     #endif
-                    {"Screen Off",    [=]() { setScreenOff(); }},
                     {"Sleep",         [=]() { setSleepMode(); }},
                     {"Restart",       [=]() { ESP.restart(); }},
                     {"Main menu",     [=]() { backToMenu(); }},
