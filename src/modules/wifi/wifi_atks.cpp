@@ -73,10 +73,10 @@ void wifi_atk_info(String tssid,String mac, uint8_t channel) {
   drawMainBorder();
   tft.setTextColor(FGCOLOR);
   tft.drawCentreString("-=Information=-", tft.width()/2,28,SMOOTH_FONT);
-  tft.drawString("AP: " + tssid,0,48);
-  tft.drawString("Channel: " + String(channel),0,66);
-  tft.drawString(mac,0,84);
-  tft.drawString("Press " + String(BTN_ALIAS) + " to act",0,tft.height()-20);
+  tft.drawString("AP: " + tssid,10,48);
+  tft.drawString("Channel: " + String(channel),10,66);
+  tft.drawString(mac,10,84);
+  tft.drawString("Press " + String(BTN_ALIAS) + " to act",10,tft.height()-20);
 
   delay(300);
   while(!checkSelPress()) {
@@ -98,6 +98,7 @@ void wifi_atk_menu() {
     options = {
       {"Target Atks", [&]() { scanAtks = true; }},
       {"Beacon SPAM", [=]() { beaconAttack(); }},
+      {"Main menu", [=]() { backToMenu(); }},
     };
     delay(200);
     loopOptions(options);
@@ -116,7 +117,7 @@ void wifi_atk_menu() {
           target_atk_menu(WiFi.SSID(i).c_str(), WiFi.BSSIDstr(i), chan); }});
       }
 
-      options.push_back({"Main Menu", [=]()     { backToMenu(); }});
+      options.push_back({"Main menu", [=]()     { backToMenu(); }});
 
       delay(200);
       loopOptions(options);
@@ -133,7 +134,7 @@ void target_atk_menu(String tssid,String mac, uint8_t channel) {
       {"Deauth", [=]()        { target_atk(tssid, mac, channel); }},
       {"Clone Portal", [=]()  { startEvilPortal(tssid, channel,false); }},
       {"Deauth+Clone", [=]()  { startEvilPortal(tssid, channel,true); }},
-      {"Main Menu", [=]()     { backToMenu(); }},
+      {"Main menu", [=]()     { backToMenu(); }},
     };
 
     delay(200);
@@ -438,27 +439,29 @@ void beaconAttack() {
     {"Funny SSID", [&]() { BeaconMode = 0; txt = "Spamming Funny"; }},
     {"Rucky Roll", [&]() { BeaconMode = 1; txt = "Spamming Ricky"; }},
     {"Random SSID", [&]() { BeaconMode = 2; txt = "Spamming Random"; }},
+    {"Main menu", [=]() { backToMenu(); }},
   };
   delay(200);
   loopOptions(options);
   delay(200);
 
-  wifiConnected = true; // display wifi icon
-  drawMainMenu(0);
-  displayRedStripe(txt,TFT_WHITE, FGCOLOR);
-  while (1) {
-    displayRedStripe(String(BeaconMode),TFT_WHITE, FGCOLOR);
-    delay(200);
-    if (BeaconMode == 0) {
-      beaconSpamList(Beacons);
-    } else if (BeaconMode == 1){
-      beaconSpamList(rickrollssids);
-    } else if (BeaconMode == 2) {
-      char* randoms = randomSSID();
-      beaconSpamList(randoms);
-    }
-    if (checkEscPress()) break;
+  if(!returnToMenu) {
+      wifiConnected = true; // display wifi icon
+      drawMainMenu(0);
+      displayRedStripe(txt,TFT_WHITE, FGCOLOR);
+      while (1) {
+        displayRedStripe(String(BeaconMode),TFT_WHITE, FGCOLOR);
+        delay(200);
+        if (BeaconMode == 0) {
+          beaconSpamList(Beacons);
+        } else if (BeaconMode == 1){
+          beaconSpamList(rickrollssids);
+        } else if (BeaconMode == 2) {
+          char* randoms = randomSSID();
+          beaconSpamList(randoms);
+        }
+        if (checkEscPress()) break;
+      }
+      wifiDisconnect();
   }
-  wifiDisconnect();
-
 }

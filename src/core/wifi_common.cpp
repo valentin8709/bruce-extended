@@ -10,6 +10,8 @@
 ** Description:   Connects to wifiNetwork
 ***************************************************************************************/
 bool wifiConnect(String ssid, int encryptation, bool isAP) {
+  String defaultSSID="Mobile-AP";
+  String defaultPassword="CHANGE_PASSWORD";
   if(!isAP) {
     int tmz;
     EEPROM.begin(EEPROMSIZE);
@@ -40,7 +42,11 @@ bool wifiConnect(String ssid, int encryptation, bool isAP) {
   Retry:
     if (!found || wrongPass) {
       delay(200);
-      if (encryptation > 0) pwd = keyboard(pwd, 63, "Network Password:");
+      // Default password for known AP
+      if(ssid == defaultSSID) {
+        pwd = defaultPassword;
+      }
+      else if (encryptation > 0) pwd = keyboard(pwd, 63, "Network Password:");
 
       EEPROM.begin(EEPROMSIZE);
       if (pwd != EEPROM.readString(20)) {
@@ -101,9 +107,9 @@ bool wifiConnect(String ssid, int encryptation, bool isAP) {
       if(tmz==7) timeClient.setTimeOffset(3 * 3600);
       if(tmz==8) timeClient.setTimeOffset(2 * 3600);
       localTime = myTZ.toLocal(timeClient.getEpochTime());
-      rtc.setTime(timeClient.getEpochTime());
-      updateTimeStr(rtc.getTimeStruct());
-      clock_set=true;
+      // rtc.setTime(timeClient.getEpochTime());
+      // updateTimeStr(rtc.getTimeStruct());
+      // clock_set=true;
       return true;
     }
 
@@ -113,7 +119,7 @@ bool wifiConnect(String ssid, int encryptation, bool isAP) {
     IPAddress AP_GATEWAY(172, 0, 0, 1);
     WiFi.mode(WIFI_AP);
     WiFi.softAPConfig(AP_GATEWAY, AP_GATEWAY, IPAddress(255, 255, 255, 0));
-    WiFi.softAP("BruceNet", "",6,0,4,false);
+    WiFi.softAP("BruceNet", "Bruce",6,0,4,false);
     Serial.print("IP: "); Serial.println(WiFi.softAPIP());
     wifiConnected=true;
     return true;
@@ -154,10 +160,13 @@ bool wifiConnectMenu(bool isAP) {
     for(int i=0; i<nets; i++){
       options.push_back({WiFi.SSID(i).c_str(), [=]() { wifiConnect(WiFi.SSID(i).c_str(),int(WiFi.encryptionType(i)), false); }});
     }
+    options.push_back({"Main menu", [=]() { backToMenu(); }});
     delay(200);
     loopOptions(options);
     delay(200);
   }
+
+  if(returnToMenu) return false;
 
   return wifiConnected;
 }

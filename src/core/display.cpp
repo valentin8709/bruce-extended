@@ -259,28 +259,40 @@ void drawMainMenu(int index) {
         static_cast<uint16_t>(FGCOLOR)
     };
 
-    const char* texts[6] = { "WiFi", "BLE", "RF", "RFID", "Others", "Config" };
+    const char* texts[10] = { "Clock", "WiFi", "BLE", "IR", "RF", "RFID", "FM", "Palnagotchi", "Others", "Config" };
 
     drawMainBorder();
     tft.setTextSize(FG);
 
     switch(index) {
       case 0:
-        drawWifi(80,27);
+        drawClock(80,27);
         break;
       case 1:
-        drawBLE(80,27);
+        drawWifi(80,27);
         break;
       case 2:
-        drawRf(80,27);
+        drawBLE(80,27);
         break;
       case 3:
-        drawRfid(80,27);
+        drawIR(80,27);
         break;
       case 4:
-        drawOther(80,27);
+        drawRf(80,27);
         break;
       case 5:
+        drawRfid(80,27);
+        break;
+      case 6:
+        drawFM(80,27);
+        break;
+      case 7:
+        drawPalnagotchi(80,27);
+        break;
+      case 8:
+        drawOther(80,27);
+        break;
+      case 9:
         drawCfg(80,27);
         break;
     }
@@ -289,8 +301,6 @@ void drawMainMenu(int index) {
     tft.setTextSize(FG);
     tft.drawChar('<',10,tft.height()/2+10);
     tft.drawChar('>',tft.width()-(LW*FG+10),tft.height()/2+10);
-
-
 }
 
 
@@ -331,6 +341,98 @@ int getBattery() {
   return  (percent < 0) ? 0
         : (percent >= 100) ? 100
         :  percent;
+}
+
+/***************************************************************************************
+** Function name: drawClock()
+** Description: Display cock menu
+***************************************************************************************/
+void drawClock(int x, int y) {
+    // Blank
+    tft.fillRect(x,y,80,80,BGCOLOR);
+
+    // Case
+    tft.drawCircle(40+x,40+y,30,FGCOLOR);
+    tft.drawCircle(40+x,40+y,31,FGCOLOR);
+    tft.drawCircle(40+x,40+y,32,FGCOLOR);
+
+    // Pivot center
+    tft.fillCircle(40+x,40+y,3,FGCOLOR);
+
+    // Hours & minutes
+    tft.drawLine(40+x,40+y,40+x-10,40+y-10,FGCOLOR);
+    tft.drawLine(40+x,40+y,40+x+16,40+y-16,FGCOLOR);
+}
+
+/***************************************************************************************
+** Function name: drawFM()
+** Description: Display FM menu
+***************************************************************************************/
+void drawFM(int x, int y) {
+    // Blank
+    tft.fillRect(x,y,80,80,BGCOLOR);
+
+    // Case
+    tft.drawRoundRect(-12+x,16+y,110,55,8,FGCOLOR);
+    tft.drawRoundRect(-12+x-1,16-1+y,112,57,8,FGCOLOR);
+    tft.drawRoundRect(-12+x-2,16-2+y,114,59,8,FGCOLOR);
+
+    // Potentiometer
+    tft.fillCircle(75+x,40+y,12,FGCOLOR);
+
+    // Screen
+    tft.drawRect(7+x,27+y,40,20,FGCOLOR);
+
+    // Antenna
+    tft.drawLine(tft.width()/4+30,tft.height()/4+7,tft.width()/4+58,tft.height()/5+6,FGCOLOR);
+    tft.drawLine(tft.width()/4+31,tft.height()/4+7,tft.width()/4+59,tft.height()/5+6,FGCOLOR);
+    tft.fillCircle(tft.width()/4+58,tft.height()/5+6,2,FGCOLOR);
+
+    // Buttons
+    tft.fillCircle(12+x,58+y,5,FGCOLOR);
+    tft.fillCircle(42+x,58+y,5,FGCOLOR);
+}
+
+/***************************************************************************************
+** Function name: drawIR()
+** Description: Display IR menu
+***************************************************************************************/
+void drawIR(int x, int y) {
+    // Blank
+    tft.fillRect(x,y,80,80,BGCOLOR);
+
+    // Remote
+    tft.drawRoundRect(x+24,y+15,33,58,8,FGCOLOR);
+    tft.drawRoundRect(x+23,y+14,35,60,8,FGCOLOR);
+    tft.drawRoundRect(x+22,y+13,37,62,8,FGCOLOR);
+
+    // Main arrows
+    tft.drawCircle(40+x,30+y,10,FGCOLOR);
+    tft.drawCircle(40+x,30+y,5,FGCOLOR);
+
+    // Buttons
+    tft.fillCircle(46+x,50+y,4,FGCOLOR);
+    tft.fillCircle(34+x,50+y,4,FGCOLOR);
+    tft.fillCircle(46+x,60+y,4,FGCOLOR);
+    tft.fillCircle(34+x,60+y,4,FGCOLOR);
+
+    // IR Led
+    tft.drawRoundRect(x+38,y+12,5,5,2,FGCOLOR);
+    tft.drawLine(x+37,y+9,x+33,y+4,FGCOLOR);
+    tft.drawLine(x+36,y+9,x+32,y+4,FGCOLOR);
+    tft.drawLine(x+40,y+9,x+40,y+4,FGCOLOR);
+    tft.drawLine(x+41,y+9,x+41,y+4,FGCOLOR);
+    tft.drawLine(x+43,y+9,x+48,y+4,FGCOLOR);
+    tft.drawLine(x+45,y+9,x+49,y+4,FGCOLOR);
+}
+
+/***************************************************************************************
+** Function name: drawPalnagotchi()
+** Description: Display Palnagotchi menu
+***************************************************************************************/
+void drawPalnagotchi(int x, int y) {
+    tft.fillRect(x,y,80,80,BGCOLOR);
+    tft.drawCentreString("(^__^)",40+x,30+y, SMOOTH_FONT);
 }
 
 /***************************************************************************************

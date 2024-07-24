@@ -28,8 +28,8 @@ bool dimmer = false;
 char timeStr[10];
 time_t localTime;
 struct tm* timeInfo;
-ESP32Time rtc;
-bool clock_set = false;
+cplus_RTC _rtc;
+bool clock_set = true;
 JsonDocument settings;
 
 String wui_usr="admin";
@@ -59,9 +59,12 @@ TFT_eSprite draw = TFT_eSprite(&tft);
 #include "core/wifi_common.h"
 
 #include "modules/ble/ble_spam.h"
+#include "modules/ble/ble_common.h"
 #include "modules/others/openhaystack.h"
 #include "modules/others/tururururu.h"
 #include "modules/others/TV-B-Gone.h"
+#include "modules/others/qrcode_menu.h"
+#include "modules/others/mic.h"
 #include "modules/others/webInterface.h"
 #include "modules/rf/rf.h"
 #include "modules/rfid/rfid.h"
@@ -102,7 +105,6 @@ void setup() {
   wifiConnected=false;
   BLEConnected=false;
 
-
   // Setup GPIOs and stuff
   #if  defined(STICK_C_PLUS2)
     pinMode(UP_BTN, INPUT);   // Sets the power btn as an INPUT
@@ -126,6 +128,7 @@ void setup() {
   rotation = gsetRotation();
   tft.setRotation(rotation);
   resetTftDisplay();
+  setBrightness(25);
 
   #if defined(BACKLIGHT)
   pinMode(BACKLIGHT, OUTPUT);
@@ -171,11 +174,12 @@ void setup() {
   //Start Bootscreen timer
 
   bool change=false;
+  _tone(5000, 50);
   tft.setTextColor(FGCOLOR, TFT_BLACK);
   tft.setTextSize(FM);
-  tft.println("Bruce");
+  tft.println("\n   Bruce Extended");
   tft.setTextSize(FP);
-  tft.println(String(BRUCE_VERSION));
+  tft.println("\n               " + String(BRUCE_VERSION));
   tft.setTextSize(FM);
   if(!LittleFS.begin(true)) { LittleFS.format(), LittleFS.begin();}
   
@@ -202,9 +206,14 @@ void setup() {
   }
 
   // If M5 or Enter button is pressed, continue from here
+  _tone(5000, 50);
+  delay(200);
+  _tone(5000, 50);
   Program:
   delay(200);
+
   previousMillis = millis();
+  runClockLoop();
 }
 
 /**********************************************************************
@@ -212,9 +221,10 @@ void setup() {
 **  Main loop
 **********************************************************************/
 void loop() {
+  RTC_TimeTypeDef _time;
   bool redraw = true;
   int index = 0;
-  int opt = 6; // there are 3 options> 1 list SD files, 2 OTA and 3 Config
+  int opt = 10; // there are 3 options> 1 list SD files, 2 OTA and 3 Config
   tft.fillRect(0,0,WIDTH,HEIGHT,BGCOLOR);
   setupSdCard();
   getConfigs();  
@@ -232,6 +242,7 @@ void loop() {
     }
 
     if(checkPrevPress()) {
+      checkReboot();
       if(index==0) index = opt - 1;
       else if(index>0) index--;
       redraw = true;
@@ -245,120 +256,161 @@ void loop() {
 
     /* Select and run function */
     if(checkSelPress()) {
-      switch(index) {
-        case 0:   // WiFi
-          if(!wifiConnected) {
-            options = {
-              {"Connect Wifi", [=]()  { wifiConnectMenu(); }},    //wifi_common.h
-              {"WiFi AP", [=]()       { wifiConnectMenu(true); }},//wifi_common.h
-            };
-          } else {
-            options = {
-              {"Disconnect", [=]()  { wifiDisconnect(); }},    //wifi_common.h
-            };
-          }
-          options.push_back({"Wifi Atks", [=]()     { wifi_atk_menu(); }});
-        #ifndef STICK_C_PLUS
-          options.push_back({"TelNET", [=]()        { telnet_setup(); }});
-          options.push_back({"SSH", [=]()           { ssh_setup(); }});
-        #endif
-          options.push_back({"Raw Sniffer", [=]()   { sniffer_setup(); }});
-          options.push_back({"DPWO", [=]()          { dpwo_setup(); }});
-          options.push_back({"Evil Portal", [=]()   { startEvilPortal(); }});
-          options.push_back({"Scan Hosts", [=]()    { local_scan_setup(); }});
-        #ifndef STICK_C_PLUS
-          options.push_back({"Wireguard", [=]()     { wg_setup(); }});
-        #endif
-          options.push_back({"Main Menu", [=]()     { backToMenu(); }});
-          delay(200);
-          loopOptions(options,false,true,"WiFi");
-          break;
-        case 1: // BLE
-          options = {
-            {"AppleJuice", [=]()   { aj_adv(0); }},
-            {"SwiftPair", [=]()    { aj_adv(1); }},
-            {"Samsung Spam", [=]() { aj_adv(2);}},
-            {"SourApple", [=]()    { aj_adv(3); }},
-            {"Android Spam", [=]() { aj_adv(4); }},
-            {"BT Maelstrom", [=]() { aj_adv(5); }},
-            {"Main Menu", [=]()    { backToMenu(); }},
-          };
-          delay(200);
-          loopOptions(options,false,true,"Bluetooth");
-          break;
-        case 2: // RF
-          options = {
-            //{"Scan/copy", [=]()   { displayRedStripe("Scan/Copy"); }},
-            //{"Replay", [=]()      { displayRedStripe("Replay"); }},
-            {"Spectrum", [=]()            { rf_spectrum(); }}, //@IncursioHack
-            {"Jammer Itmt", [=]() { rf_jammerIntermittent(); }}, //@IncursioHack
-            {"Jammer Full", [=]()         { rf_jammerFull(); }}, //@IncursioHack
-            {"Main Menu", [=]()   { backToMenu(); }},
-          };
-          delay(200);
-          loopOptions(options,false,true,"Radio Frequency");
-          break;
-        case 3: // RFID
-          options = {
-            {"Tag-O-Matic", [=]()   { TagOMatic(); }}, //@RennanCockles
-            {"Copy/Write", [=]()   { rfid_setup(); }}, //@IncursioHack
-            //{"Replay", [=]()      { displayRedStripe("Replay"); }},
-            {"Main Menu", [=]()    { backToMenu(); }},
-          };
-          delay(200);
-          loopOptions(options,false,true,"RFID");
-          break;
-        case 4: //Other
-          options = {
-            {"TV-B-Gone", [=]()     { StartTvBGone(); }},
-            {"Custom IR", [=]()     { otherIRcodes(); }},
-            {"SD Card", [=]()       { loopSD(SD); }},
-            {"LittleFS", [=]()      { loopSD(LittleFS); }},
-            {"WebUI", [=]()         { loopOptionsWebUi(); }},
-            {"Megalodon", [=]()     { shark_setup(); }},
-          };
-          #ifdef CARDPUTER
-          options.push_back({"BadUSB", [=]()        { usb_setup(); }});
-          options.push_back({"LED Control", [=]()   { ledrgb_setup(); }}); //IncursioHack
-          options.push_back({"LED FLash", [=]()     { ledrgb_flash(); }}); // IncursioHack
-
-          #endif
-          options.push_back({"Openhaystack", [=]()  { openhaystack_setup(); }});
-          options.push_back({"Main Menu", [=]()     { backToMenu(); }});
-          delay(200);
-          loopOptions(options,false,true,"Others");
-          break;
-        case 5: //Config
-          options = {
-            {"Brightness",    [=]() { setBrightnessMenu();   saveConfigs();}},                 //settings.h
-            {"Dim Time",      [=]() { setDimmerTimeMenu();   saveConfigs();}},             
-            {"Clock",         [=]() { setClock();            saveConfigs();}},                      //settings.h
-            {"Orientation",   [=]() { gsetRotation(true);    saveConfigs();}},               //settings.h
-            {"UI Color",      [=]() { setUIColor();          saveConfigs();}},
-            {"Ir TX Pin",     [=]() { gsetIrTxPin(true);     saveConfigs();}},                 //settings.h
-            {"Ir RX Pin",     [=]() { gsetIrRxPin(true);     saveConfigs();}},                 //settings.h
-            #ifndef CARDPUTER
-            {"RF TX Pin",     [=]() { gsetRfTxPin(true);     saveConfigs();}},                 //settings.h
-            {"RF RX Pin",     [=]() { gsetRfRxPin(true);     saveConfigs();}},                 //settings.h
-            #endif
-            {"Sleep",    [=]() { setSleepMode(); }},
-            {"Restart",       [=]() { ESP.restart(); }},
-            {"Main Menu",     [=]() { backToMenu(); }},
-          };
-          delay(200);
-          loopOptions(options,false,true,"Config");
-          break;
-      }
-      redraw=true;
+        switch(index) {
+            case 0: // Clock
+                runClockLoop();
+                break;
+            case 1: // WiFi
+                if(!wifiConnected) {
+                options = {
+                    {"Connect WiFi", [=]()  { wifiConnectMenu(); }},    //wifi_common.h
+                    {"WiFi AP", [=]()       { wifiConnectMenu(true); }},//wifi_common.h
+                };
+                } else {
+                options = {
+                    {"Disconnect", [=]()  { wifiDisconnect(); }},    //wifi_common.h
+                };
+                }
+                options.push_back({"Wifi atks", [=]()     { wifi_atk_menu(); }});
+                #ifndef STICK_C_PLUS
+                    options.push_back({"TelNET", [=]()        { telnet_setup(); }});
+                    options.push_back({"SSH", [=]()           { ssh_setup(); }});
+                #endif
+                options.push_back({"Raw sniffer", [=]()   { sniffer_setup(); }});
+                options.push_back({"DPWO", [=]()          { dpwo_setup(); }});
+                options.push_back({"Evil portal", [=]()   { startEvilPortal(); }});
+                options.push_back({"Scan hosts", [=]()    { local_scan_setup(); }});
+                #ifndef STICK_C_PLUS
+                    options.push_back({"Wireguard", [=]()     { wg_setup(); }});
+                #endif
+                options.push_back({"Main menu", [=]()     { backToMenu(); }});
+                delay(200);
+                loopOptions(options,false,true,"WiFi");
+                break;
+            case 2: // BLE
+                options = {
+                    {"BLE connect", [=]()  { ble_test(); }},
+                    {"BLE scan", [=]()     { ble_scan(); }},
+                    {"AppleJuice", [=]()   { aj_adv(0); }},
+                    {"SwiftPair", [=]()    { aj_adv(1); }},
+                    {"Samsung spam", [=]() { aj_adv(2);}},
+                    {"SourApple", [=]()    { aj_adv(3); }},
+                    {"Android spam", [=]() { aj_adv(4); }},
+                    {"BT maelstrom", [=]() { aj_adv(5); }},
+                    {"Main menu", [=]()    { backToMenu(); }},
+                };
+                delay(200);
+                loopOptions(options,false,true,"Bluetooth");
+                break;
+            case 3: // IR
+                options = {
+                    {"TV-B-Gone", [=]()     { StartTvBGone(); }},
+                    {"Custom IR", [=]()     { otherIRcodes(); }},
+                    {"Main menu", [=]()     { backToMenu(); }},
+                };
+                delay(200);
+                loopOptions(options,false,true,"Infrared");
+                break;
+            case 4: // RF
+                options = {
+                    //{"Scan/copy", [=]()   { displayRedStripe("Scan/Copy"); }},
+                    //{"Replay", [=]()      { displayRedStripe("Replay"); }},
+                    {"Spectrum", [=]()            { rf_spectrum(); }}, //@IncursioHack
+                    {"Jammer itmt", [=]()         { rf_jammerIntermittent(); }}, //@IncursioHack
+                    {"Jammer full", [=]()         { rf_jammerFull(); }}, //@IncursioHack
+                    {"Main menu", [=]()           { backToMenu(); }},
+                };
+                delay(200);
+                loopOptions(options,false,true,"Radio Frequency");
+                break;
+            case 5: // RFID
+                options = {
+                    {"Copy/write", [=]()   { rfid_setup(); }}, //@IncursioHack
+                    {"Tag-O-Matic", [=]()   { TagOMatic(); }}, //@RennanCockles
+                    {"Main menu", [=]()    { backToMenu(); }},
+                    //{"Replay", [=]()      { displayRedStripe("Replay"); }},
+                };
+                delay(200);
+                loopOptions(options,false,true,"RFID");
+                break;
+            case 6: // FM
+                options = {
+                    {"Bcast music", [=]()    { backToMenu(); }},
+                    {"Reserved frq", [=]()    { backToMenu(); }},
+                    {"Hijack TA", [=]()    { backToMenu(); }},
+                    {"Main menu", [=]()    { backToMenu(); }},
+                };
+                delay(200);
+                loopOptions(options,false,true,"Radio FM");
+                break;
+            case 7: // Palnagotchi
+                #if defined(CARDPUTER)
+                    palnagotchi_setup();
+                    palnagotchi_loop();
+                #else
+                    tft.setTextColor(FGCOLOR,BGCOLOR);
+                    tft.setCursor(52, tft.height()/3+5);
+                    tft.setTextSize(4);
+                    tft.printf("(#__#)");
+                    delay(400);
+                    while(!checkEscPress() and !checkSelPress()) {
+                        delay(200);
+                    }
+                #endif
+                break;
+            case 8: //Other
+                options = {
+                    {"QR codes", [=]()      { qrcode_menu(); }},
+                    {"Mic test", [=]()      { mic_test(); }},
+                    {"SD Card", [=]()       { loopSD(SD); }},
+                    {"LittleFS", [=]()      { loopSD(LittleFS); }},
+                    {"WebUI", [=]()         { loopOptionsWebUi(); }},
+                    {"Megalodon", [=]()     { shark_setup(); }},
+                };
+                #ifdef CARDPUTER
+                    options.push_back({"BadUSB", [=]()        { usb_setup(); }});
+                    options.push_back({"LED Control", [=]()   { ledrgb_setup(); }}); //IncursioHack
+                    options.push_back({"LED FLash", [=]()     { ledrgb_flash(); }}); // IncursioHack
+                #endif
+                options.push_back({"Openhaystack", [=]()  { openhaystack_setup(); }});
+                options.push_back({"Main menu", [=]()     { backToMenu(); }});
+                delay(200);
+                loopOptions(options,false,true,"Others");
+                break;
+            case 9: //Config
+                options = {
+                    {"Brightness",    [=]() { setBrightnessMenu(); }},              //settings.h
+                    {"Clock",         [=]() { setClock();  }},                      //settings.h
+                    {"Orientation",   [=]() { gsetRotation(true); }},               //settings.h
+                    {"UI Color",      [=]() { setUIColor();}},
+                    {"Ir TX Pin",     [=]() { gsetIrTxPin(true);}},                 //settings.h
+                    {"Ir RX Pin",     [=]() { gsetIrRxPin(true);}},                 //settings.h
+                    {"FM TRX Pins",   [=]() { backToMenu();}},                      //settings.h
+                    #ifndef CARDPUTER
+                    {"RF TX Pin",     [=]() { gsetRfTxPin(true);}},                 //settings.h
+                    {"RF RX Pin",     [=]() { gsetRfRxPin(true);}},                 //settings.h
+                    #endif
+                    {"Screen Off",    [=]() { setScreenOff(); }},
+                    {"Sleep",         [=]() { setSleepMode(); }},
+                    {"Restart",       [=]() { ESP.restart(); }},
+                    {"Main menu",     [=]() { backToMenu(); }},
+                };
+                delay(200);
+                loopOptions(options,false,true,"Config");
+                break;
+        }
+        redraw=true;
     }
     if(clock_set) {
-      updateTimeStr(rtc.getTimeStruct());
-      setTftDisplay(12, 12, FGCOLOR, 1, BGCOLOR);
-      tft.print(timeStr);
+        //updateTimeStr(_rtc.GetBm8563Time());
+        _rtc.GetTime(&_time);
+        setTftDisplay(12, 12, FGCOLOR, 1, BGCOLOR);
+        snprintf(timeStr, sizeof(timeStr), "%02d:%02d", _time.Hours, _time.Minutes);
+        tft.print(timeStr);
     }
-   else{
-      setTftDisplay(12, 12, FGCOLOR, 1, BGCOLOR);
-      tft.print("BRUCE " + String(BRUCE_VERSION));
+    else{
+        setTftDisplay(12, 12, FGCOLOR, 1, BGCOLOR);
+        tft.print("BRUCE " + String(BRUCE_VERSION));
     }
   }
 }

@@ -11,3 +11,5 @@ bool checkPrevPress();
 bool checkSelPress();
 
 bool checkEscPress();
+
+void checkReboot();
