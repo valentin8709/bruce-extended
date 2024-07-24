@@ -143,7 +143,7 @@ void setup() {
   RfTx = EEPROM.read(8);
   RfRx = EEPROM.read(9);
   tmz = EEPROM.read(10);
-  FGCOLOR = EEPROM.read(11) << 8 | EEPROM.read(12);
+  FGCOLOR = TFT_ORANGE; //EEPROM.read(11) << 8 | EEPROM.read(12);
   //log_i("EEPROM 0=%d, 1=%s, 2=%d, 6=%d, 7=%d, 8=%d, 9=%d, 10=%d, 11-12=%d", rotation, dimmerSet, bright,IrTx, IrRx, RfTx, RfRx, tmz, FGCOLOR);
   if (rotation>3 || dimmerSet>60 || bright>100 || IrTx>100 || IrRx>100 || RfRx>100 || RfTx>100 || tmz>24) {
     rotation = ROTATION;
