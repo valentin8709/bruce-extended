@@ -118,6 +118,7 @@ void StartTvBGone() {
   options = {
       {"Region NA", [&]() { region = NA; }},
       {"Region EU", [&]() { region = EU; }},
+      {"Main menu", [=]() { backToMenu(); }},
   };
   delay(200);
   loopOptions(options);
@@ -261,7 +262,8 @@ void otherIRcodes() {
       {"Recent", [&]()  { selected_code = selectRecentIrMenu(); }},
       {"LittleFS", [&]()   { fs=&LittleFS; }},
   };
-  if(setupSdCard()) options.push_back({"SD Card", [&]()  { fs=&SD; }});    
+  if(setupSdCard()) options.push_back({"SD Card", [&]()  { fs=&SD; }});
+  options.push_back({"Main menu", [=]()  { backToMenu(); }});
 
   delay(200);
   loopOptions(options);
@@ -297,6 +299,7 @@ void otherIRcodes() {
   options = {
     {"Choose cmd", [&]()  { mode_cmd=true; }},
     {"Spam all", [&]()    { mode_cmd=false; }},
+    {"Main menu", [=]()   { backToMenu(); }},
   };
   delay(200);
   loopOptions(options);
@@ -331,7 +334,7 @@ void otherIRcodes() {
       if(codes[i].protocol.startsWith("Samsung")) options.push_back({ codes[i].name.c_str(), [=](){ sendSamsungCommand(codes[i].address, codes[i].command); addToRecentCodes(codes[i]); }});
       if(codes[i].protocol=="SIRC")   options.push_back({ codes[i].name.c_str(), [=](){ sendSonyCommand(codes[i].address, codes[i].command); addToRecentCodes(codes[i]); }});
     }
-    options.push_back({ "Main Menu" , [&](){ exit=true; }});
+    options.push_back({ "Main menu" , [&](){ exit=true; }});
     databaseFile.close();
 
     digitalWrite(IrTx, LED_OFF);

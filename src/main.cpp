@@ -28,8 +28,8 @@ bool dimmer = false;
 char timeStr[10];
 time_t localTime;
 struct tm* timeInfo;
-ESP32Time rtc;
-bool clock_set = false;
+cplus_RTC _rtc;
+bool clock_set = true;
 JsonDocument settings;
 
 String wui_usr="admin";
@@ -96,6 +96,7 @@ void begin_tft(){
   rotation = gsetRotation();
   tft.setRotation(rotation);
   resetTftDisplay();
+  setBrightness(25);
 }
 
 
@@ -233,9 +234,10 @@ void setup() {
 **  Main loop
 **********************************************************************/
 void loop() {
+  RTC_TimeTypeDef _time;
   bool redraw = true;
   int index = 0;
-  int opt = 7;
+  int opt = 10;
 
   tft.fillRect(0,0,WIDTH,HEIGHT,BGCOLOR);
   setupSdCard();
@@ -258,6 +260,7 @@ void loop() {
     checkShortcutPress();  // shortctus to quickly start apps without navigating the menus
     
     if (checkPrevPress()) {
+      checkReboot();
       if(index==0) index = opt - 1;
       else if(index>0) index--;
       redraw = true;

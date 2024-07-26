@@ -15,3 +15,6 @@ bool checkEscPress();
 void checkShortcutPress();
 
 bool checkAnyKeyPress();
+
+void checkReboot();
+

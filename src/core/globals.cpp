@@ -9,7 +9,7 @@
 when using loopfunctions with an option to "Back to Menu", use:
 
 add this option:
-    options.push_back({"Main Menu", [=]() { backToMenu(); }});
+    options.push_back({"Main menu", [=]() { backToMenu(); }});
 
 while(1) {
     if(returnToMenu) break; // stop this loop and return to the previous loop
@@ -32,7 +32,7 @@ void readFGCOLORFromEEPROM() {
 
     switch(colorEEPROM){
         case 0:
-            FGCOLOR = TFT_PURPLE+0x3000;
+            FGCOLOR = TFT_ORANGE;
             break;
         case 1:
             FGCOLOR = TFT_WHITE;
@@ -49,11 +49,14 @@ void readFGCOLORFromEEPROM() {
         case 5:
             FGCOLOR = TFT_YELLOW;
             break;
+        case 6:
+            FGCOLOR = TFT_MAGENTA;
+            break;
         case 7:
-            FGCOLOR = TFT_ORANGE;
+            FGCOLOR = TFT_PURPLE;
             break;
         default:
-            FGCOLOR = TFT_PURPLE+0x3000;
+            FGCOLOR = TFT_ORANGE;
             EEPROM.put(5, 0);
             EEPROM.commit();
             break;
@@ -70,4 +73,8 @@ void backToMenu() {
 void updateTimeStr(struct tm timeInfo) {
   // Atualiza timeStr com a hora e minuto
   snprintf(timeStr, sizeof(timeStr), "%02d:%02d", timeInfo.tm_hour, timeInfo.tm_min);
+}
+
+void _tone(unsigned int frequency, unsigned long duration = 0UL) {
+    tone(BUZZ_PIN, frequency, duration);
 }
